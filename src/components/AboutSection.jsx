@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 
 const VP = { once: true, amount: 0.2 }
-const VP_HALF = { once: true, amount: 0.5 }
 
 const stats = [
   { value: '3.57', label: 'GPA' },
@@ -9,11 +8,19 @@ const stats = [
   { value: '21', label: 'Age' },
 ]
 
-const skills = [
-  { area: 'Data Science',     level: 85 },
-  { area: 'React / Frontend', level: 80 },
-  { area: 'Python / ML',      level: 70 },
-  { area: 'SQL / Databases',  level: 65 },
+const skillGroups = [
+  {
+    label: 'Languages',
+    tags: ['Python', 'JavaScript', 'SQL', 'Java', 'C++'],
+  },
+  {
+    label: 'Frameworks & Tools',
+    tags: ['React', 'Vite', 'Tailwind CSS', 'Three.js', 'Framer Motion', 'Supabase', 'Git', 'Vercel'],
+  },
+  {
+    label: 'Concepts',
+    tags: ['Data Structures', 'REST APIs', 'Machine Learning (intro)', 'Database Design', 'UI/UX Fundamentals'],
+  },
 ]
 
 export default function AboutSection() {
@@ -79,7 +86,7 @@ export default function AboutSection() {
             </div>
           </motion.div>
 
-          {/* Right — stats + skill bars */}
+          {/* Right — stats + skill tag cloud */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -104,33 +111,39 @@ export default function AboutSection() {
               ))}
             </div>
 
-            {/* Skill bars — staggered */}
-            <div className="space-y-3">
-              {skills.map((skill, i) => (
-                <motion.div
-                  key={skill.area}
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={VP_HALF}
-                  transition={{ duration: 0.5, delay: i * 0.1, ease: 'easeOut' }}
-                  className="will-change-transform"
-                >
-                  <div className="flex justify-between text-sm mb-1.5">
-                    <span className="text-slate-300 font-medium">{skill.area}</span>
-                    <span className="text-slate-600 font-mono text-xs">{skill.level}%</span>
+            {/* Skill tag cloud */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={VP}
+              transition={{ duration: 0.6, delay: 0.35, ease: 'easeOut' }}
+              className="space-y-5 will-change-transform"
+            >
+              {skillGroups.map((group) => (
+                <div key={group.label}>
+                  <p className="text-xs font-mono text-slate-600 uppercase tracking-widest mb-2">
+                    {group.label}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {group.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        style={{
+                          background: 'rgba(34,211,238,0.08)',
+                          border: '1px solid rgba(34,211,238,0.2)',
+                          color: '#22d3ee',
+                          borderRadius: '9999px',
+                          padding: '4px 14px',
+                          fontSize: '13px',
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
-                  <div className="h-1 bg-slate-800 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${skill.level}%` }}
-                      viewport={VP_HALF}
-                      transition={{ duration: 1, delay: 0.2 + i * 0.1, ease: 'easeOut' }}
-                      className="h-full bg-gradient-to-r from-[#00d4ff] to-[#3b82f6] rounded-full will-change-transform"
-                    />
-                  </div>
-                </motion.div>
+                </div>
               ))}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>

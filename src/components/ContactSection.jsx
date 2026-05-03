@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 const VP = { once: true, amount: 0.2 }
 
@@ -38,7 +39,28 @@ const links = [
   },
 ]
 
+const inputStyle = {
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.1)',
+  color: 'white',
+  borderRadius: '8px',
+  padding: '10px 14px',
+  width: '100%',
+  outline: 'none',
+  fontSize: '14px',
+}
+
 export default function ContactSection() {
+  const [status, setStatus] = useState('idle')
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    if (status !== 'idle') return
+    setStatus('sending')
+    // TODO: wire up to Formspree or Resend
+    setTimeout(() => setStatus('sent'), 1500)
+  }
+
   return (
     <section id="contact" className="relative py-32 px-6 border-t border-slate-800/60">
       <div className="max-w-3xl mx-auto text-center">
@@ -89,6 +111,65 @@ export default function ContactSection() {
             </motion.a>
           ))}
         </div>
+
+        {/* Contact form */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={VP}
+          transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+          className="mt-16 text-left will-change-transform"
+        >
+          <p className="text-xs text-slate-500 font-mono uppercase tracking-widest mb-6 text-center">
+            Or send a message
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              type="text"
+              placeholder="Name"
+              required
+              style={inputStyle}
+              onFocus={e => { e.currentTarget.style.borderColor = '#22d3ee' }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              required
+              style={inputStyle}
+              onFocus={e => { e.currentTarget.style.borderColor = '#22d3ee' }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+            />
+            <textarea
+              placeholder="Message"
+              rows={4}
+              required
+              style={{ ...inputStyle, resize: 'vertical' }}
+              onFocus={e => { e.currentTarget.style.borderColor = '#22d3ee' }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+            />
+            <button
+              type="submit"
+              disabled={status !== 'idle'}
+              style={{
+                width: '100%',
+                background: status === 'sent' ? 'rgba(34,211,238,0.3)' : '#22d3ee',
+                color: '#020817',
+                fontWeight: 600,
+                borderRadius: '8px',
+                padding: '12px',
+                border: 'none',
+                cursor: status !== 'idle' ? 'default' : 'pointer',
+                fontSize: '14px',
+                transition: 'background 0.2s',
+              }}
+            >
+              {status === 'idle' && 'Send Message'}
+              {status === 'sending' && 'Sending...'}
+              {status === 'sent' && 'Message sent ✓'}
+            </button>
+          </form>
+        </motion.div>
 
         {/* Footer */}
         <motion.div

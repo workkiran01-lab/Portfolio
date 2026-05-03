@@ -39,6 +39,26 @@ export default function Nav() {
               {id}
             </button>
           ))}
+          {/* Place resume PDF at /public/resume.pdf */}
+          <a
+            href="/resume.pdf"
+            download
+            style={{
+              border: '1px solid #22d3ee',
+              color: '#22d3ee',
+              background: 'transparent',
+              borderRadius: '9999px',
+              padding: '6px 16px',
+              fontSize: '13px',
+              fontWeight: 500,
+              textDecoration: 'none',
+              transition: 'background 0.2s, color 0.2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#22d3ee'; e.currentTarget.style.color = '#020817' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#22d3ee' }}
+          >
+            Resume
+          </a>
         </div>
       </div>
     </nav>

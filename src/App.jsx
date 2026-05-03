@@ -6,6 +6,7 @@ import HeroOverlay from './components/HeroOverlay'
 import ProjectsSection from './components/ProjectsSection'
 import AboutSection from './components/AboutSection'
 import ContactSection from './components/ContactSection'
+import TimelineSection from './components/TimelineSection'
 import Loader from './components/Loader'
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
       <div className="relative z-10 bg-[#020817]">
         <ProjectsSection />
         <AboutSection />
+        <TimelineSection />
         <ContactSection />
       </div>
     </div>
