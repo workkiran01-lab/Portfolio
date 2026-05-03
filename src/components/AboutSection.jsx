@@ -62,7 +62,7 @@ export default function AboutSection() {
               I'm a Computer Science student at Cypress College, originally from Kathmandu, Nepal.
             </p>
             <p>
-              Moving to California alone at 21 was a crash course in figuring things out without
+              Moving to California alone at 19 was a crash course in figuring things out without
               a manual. That experience shapes how I think about building software. I'm drawn to
               problems where the gap between "this exists" and "the right people can actually use it"
               is too wide.

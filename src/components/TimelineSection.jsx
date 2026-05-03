@@ -25,7 +25,7 @@ const entries = [
     year: '2024 · Spring',
     title: 'Arrived in the US',
     subtitle: 'Webster University',
-    description: 'Left Kathmandu alone at 18. First stop: Webster University. Figured it out.',
+    description: 'Left Kathmandu alone at 19. First stop: Webster University. Figured it out.',
   },
   {
     year: 'In Progress',
