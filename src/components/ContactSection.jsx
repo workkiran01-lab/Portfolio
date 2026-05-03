@@ -53,12 +53,24 @@ const inputStyle = {
 export default function ContactSection() {
   const [status, setStatus] = useState('idle')
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     if (status !== 'idle') return
     setStatus('sending')
-    // TODO: wire up to Formspree or Resend
-    setTimeout(() => setStatus('sent'), 1500)
+    try {
+      const res = await fetch('https://formspree.io/f/REPLACE_ME', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          name: e.target[0].value,
+          email: e.target[1].value,
+          message: e.target[2].value,
+        }),
+      })
+      setStatus(res.ok ? 'sent' : 'idle')
+    } catch {
+      setStatus('idle')
+    }
   }
 
   return (
@@ -126,6 +138,7 @@ export default function ContactSection() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
+              name="name"
               placeholder="Name"
               required
               style={inputStyle}
@@ -134,6 +147,7 @@ export default function ContactSection() {
             />
             <input
               type="email"
+              name="email"
               placeholder="Email"
               required
               style={inputStyle}
@@ -141,6 +155,7 @@ export default function ContactSection() {
               onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
             />
             <textarea
+              name="message"
               placeholder="Message"
               rows={4}
               required
@@ -180,7 +195,7 @@ export default function ContactSection() {
           className="mt-20 pt-8 border-t border-slate-800/40"
         >
           <p className="text-slate-700 text-sm font-mono">
-            © 2025 Kiran Shahi · Built with React + Three.js
+            © 2026 Kiran Shahi · Built with React + Three.js
           </p>
         </motion.div>
       </div>

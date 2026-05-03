@@ -8,6 +8,7 @@ import AboutSection from './components/AboutSection'
 import ContactSection from './components/ContactSection'
 import TimelineSection from './components/TimelineSection'
 import Loader from './components/Loader'
+import CursorGlow from './components/CursorGlow'
 
 export default function App() {
   const [loading, setLoading] = useState(true)
@@ -22,6 +23,7 @@ export default function App() {
   return (
     <div className="bg-[#020817] min-h-screen">
       {loading && <Loader onDone={() => setLoading(false)} />}
+      <CursorGlow isMobile={isMobile} />
       {/* 3D starfield — swapped for CSS fallback on mobile / low-end */}
       {isMobile ? <MobileFallback /> : <HeroScene />}
 

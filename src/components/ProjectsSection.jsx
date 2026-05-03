@@ -115,13 +115,13 @@ export default function ProjectsSection() {
             description="AI-powered US tax tool built specifically for F-1 international students. Includes an AI chat assistant (Alex), Form 8843 auto-generator, personalized tax questionnaire, and document checklist. Live and used by real students."
             tags={tags}
             liveUrl="https://f1-tax-helper.vercel.app"
-            githubUrl="https://github.com/workkiran01-lab/Portfolio"
+            githubUrl="https://github.com/workkiran01-lab/f1-tax-helper"
             status="live"
             delay={0.1}
           />
           <ProjectCard
             title="Next Project"
-            description="Something new is in the works. Building at the intersection of data, social impact, and tools that matter for communities being left behind."
+            description="Currently scoping a data tool for community organizations that can't afford enterprise software. Early research phase."
             status="wip"
             delay={0.2}
           />
