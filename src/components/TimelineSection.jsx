@@ -4,28 +4,34 @@ const VP = { once: true, amount: 0.2 }
 
 const entries = [
   {
-    year: '2024 — Present',
-    title: 'Student Service Assistant',
+    year: '2026 · Spring',
+    title: 'Data Management Project',
     subtitle: 'International Student Program, Cypress College',
-    description: 'Helping new international arrivals navigate life in the US — especially students from Nepal.',
+    description: 'Leading data management work for the ISP office — organizing and maintaining student records and program data.',
   },
   {
-    year: '2024',
-    title: 'Launched F1 Tax Helper',
-    subtitle: 'Side Project',
-    description: 'Built and shipped an AI-powered tax tool for F-1 students. Used by real students during tax season.',
+    year: '2025 · Summer — Present',
+    title: 'Student Service Assistant · Part Time',
+    subtitle: 'International Student Program, Cypress College',
+    description: 'Helping new international arrivals navigate life in the US — especially students from Nepal who remind me of myself.',
   },
   {
-    year: '2024 · Fall',
-    title: 'Started CS at Cypress College',
-    subtitle: 'Cypress College, Bellflower CA',
-    description: 'Began studying Computer Science. GPA 3.57.',
+    year: '2024 · Fall — Present',
+    title: 'Transferred to Cypress College',
+    subtitle: 'Cypress College, Cypress CA',
+    description: 'Transferred to study Computer Science. GPA 3.57 and building.',
   },
   {
     year: '2024 · Spring',
     title: 'Arrived in the US',
     subtitle: 'Webster University',
-    description: 'Left Nepal alone at 18. Figured it out.',
+    description: 'Left Kathmandu alone at 18. First stop: Webster University. Figured it out.',
+  },
+  {
+    year: 'In Progress',
+    title: 'F1 Tax Helper',
+    subtitle: 'Side Project',
+    description: 'Building an AI-powered tax tool for F-1 international students. Form 8843 auto-generation, AI chat assistant, Google OAuth.',
   },
 ]
 
