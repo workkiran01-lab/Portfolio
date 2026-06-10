@@ -37,7 +37,7 @@ const entries = [
 
 export default function TimelineSection() {
   return (
-    <section className="relative py-32 px-6 border-t border-slate-800/60">
+    <section id="journey" className="relative py-32 px-6 border-t border-slate-800/60">
       <div className="max-w-3xl mx-auto">
 
         {/* Heading */}
@@ -61,9 +61,13 @@ export default function TimelineSection() {
 
         {/* Timeline */}
         <div className="relative">
-          {/* Center line */}
-          <div
-            className="absolute left-4 top-0 bottom-0 w-px"
+          {/* Center line — draws in from the top */}
+          <motion.div
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+            className="absolute left-4 top-0 bottom-0 w-px origin-top"
             style={{ background: 'rgba(34,211,238,0.2)' }}
           />
 
@@ -75,30 +79,29 @@ export default function TimelineSection() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={VP}
                 transition={{ duration: 0.55, delay: i * 0.15, ease: 'easeOut' }}
-                className="relative pl-12 will-change-transform"
+                className="group relative pl-12 will-change-transform"
               >
-                {/* Dot */}
-                <div
-                  className="absolute left-0 top-1.5 w-8 h-8 flex items-center justify-center"
-                >
+                {/* Dot — pulsing ripple, glow intensifies on hover */}
+                <div className="absolute left-0 top-1.5 w-8 h-8 flex items-center justify-center">
                   <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ background: '#22d3ee', boxShadow: '0 0 6px rgba(34,211,238,0.6)' }}
+                    className="dot-ripple w-2 h-2 rounded-full bg-[#22d3ee] [filter:drop-shadow(0_0_4px_rgba(34,211,238,0.6))] group-hover:[filter:drop-shadow(0_0_10px_rgba(34,211,238,1))] transition-[filter] duration-300"
                   />
                 </div>
 
-                <p className="text-xs font-mono text-[#22d3ee] tracking-wider mb-1">
-                  {entry.year}
-                </p>
-                <p className="text-base font-semibold text-white mb-0.5">
-                  {entry.title}
-                </p>
-                <p className="text-sm text-slate-500 mb-1.5">
-                  {entry.subtitle}
-                </p>
-                <p className="text-sm text-slate-400 italic leading-relaxed">
-                  {entry.description}
-                </p>
+                <div className="transition-transform duration-300 group-hover:translate-x-1">
+                  <p className="text-xs font-mono text-[#22d3ee] tracking-wider mb-1">
+                    {entry.year}
+                  </p>
+                  <p className="text-base font-semibold text-white mb-0.5">
+                    {entry.title}
+                  </p>
+                  <p className="text-sm text-slate-500 mb-1.5">
+                    {entry.subtitle}
+                  </p>
+                  <p className="text-sm text-slate-400 italic leading-relaxed">
+                    {entry.description}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>

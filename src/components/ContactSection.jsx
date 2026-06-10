@@ -48,6 +48,17 @@ const inputStyle = {
   width: '100%',
   outline: 'none',
   fontSize: '14px',
+  transition: 'all 200ms',
+}
+
+const focusInput = (e) => {
+  e.currentTarget.style.borderColor = 'var(--accent)'
+  e.currentTarget.style.boxShadow = '0 0 0 2px rgba(34,211,238,0.25)'
+}
+
+const blurInput = (e) => {
+  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
+  e.currentTarget.style.boxShadow = 'none'
 }
 
 export default function ContactSection() {
@@ -55,21 +66,19 @@ export default function ContactSection() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (status !== 'idle') return
+    if (status === 'sending' || status === 'sent') return
     setStatus('sending')
     try {
+      const formData = new FormData(e.target)
+      // TODO(kiran): create form at formspree.io and paste real ID
       const res = await fetch('https://formspree.io/f/REPLACE_ME', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          name: e.target[0].value,
-          email: e.target[1].value,
-          message: e.target[2].value,
-        }),
+        body: JSON.stringify(Object.fromEntries(formData)),
       })
-      setStatus(res.ok ? 'sent' : 'idle')
+      setStatus(res.ok ? 'sent' : 'error')
     } catch {
-      setStatus('idle')
+      setStatus('error')
     }
   }
 
@@ -83,10 +92,15 @@ export default function ContactSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={VP}
           transition={{ duration: 0.7, ease: 'easeOut' }}
-          className="will-change-transform"
+          className="relative will-change-transform"
         >
-          <p className="text-xs font-mono tracking-[0.25em] text-[#00d4ff] uppercase mb-3">
-            03. Contact
+          {/* Backlight glow behind the heading — purely decorative */}
+          <div
+            aria-hidden="true"
+            className="absolute left-1/2 top-0 -z-10 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/4 rounded-full bg-[#22d3ee] opacity-[0.07] blur-[120px]"
+          />
+          <p className="text-xs font-mono tracking-[0.25em] text-[#22d3ee] uppercase mb-3">
+            04. Contact
           </p>
           <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">
             Let's Talk
@@ -109,9 +123,9 @@ export default function ContactSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={VP}
               transition={{ duration: 0.5, delay: 0.1 + i * 0.12, ease: 'easeOut' }}
-              className="group flex flex-col items-center gap-3 px-8 py-6 rounded-2xl border border-slate-800 bg-[#0a0f2e]/40 hover:border-[#00d4ff]/40 hover:bg-[#00d4ff]/5 transition-all duration-300 will-change-transform"
+              className="group flex flex-col items-center gap-3 px-8 py-6 rounded-2xl border border-slate-800 bg-[#0a0f2e]/40 hover:border-[#22d3ee]/40 hover:bg-[#22d3ee]/5 transition-all duration-300 will-change-transform"
             >
-              <span className="text-slate-500 group-hover:text-[#00d4ff] transition-colors duration-200">
+              <span className="text-slate-500 group-hover:text-[#22d3ee] transition-colors duration-200">
                 {link.icon}
               </span>
               <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">
@@ -142,8 +156,8 @@ export default function ContactSection() {
               placeholder="Name"
               required
               style={inputStyle}
-              onFocus={e => { e.currentTarget.style.borderColor = '#22d3ee' }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+              onFocus={focusInput}
+              onBlur={blurInput}
             />
             <input
               type="email"
@@ -151,8 +165,8 @@ export default function ContactSection() {
               placeholder="Email"
               required
               style={inputStyle}
-              onFocus={e => { e.currentTarget.style.borderColor = '#22d3ee' }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+              onFocus={focusInput}
+              onBlur={blurInput}
             />
             <textarea
               name="message"
@@ -160,33 +174,36 @@ export default function ContactSection() {
               rows={4}
               required
               style={{ ...inputStyle, resize: 'vertical' }}
-              onFocus={e => { e.currentTarget.style.borderColor = '#22d3ee' }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+              onFocus={focusInput}
+              onBlur={blurInput}
             />
             <button
               type="submit"
-              disabled={status !== 'idle'}
-              style={{
-                width: '100%',
-                background: status === 'sent' ? 'rgba(34,211,238,0.3)' : '#22d3ee',
-                color: '#020817',
-                fontWeight: 600,
-                borderRadius: '8px',
-                padding: '12px',
-                border: 'none',
-                cursor: status !== 'idle' ? 'default' : 'pointer',
-                fontSize: '14px',
-                transition: 'background 0.2s',
-              }}
+              disabled={status === 'sending' || status === 'sent'}
+              className={`group relative w-full overflow-hidden rounded-lg border-0 p-3 text-sm font-semibold text-[#020817] transition-colors duration-200 ${
+                status === 'sent'
+                  ? 'bg-[#22d3ee]/30 cursor-default'
+                  : status === 'sending'
+                    ? 'bg-[#22d3ee] cursor-default'
+                    : 'bg-[#22d3ee] cursor-pointer'
+              }`}
             >
-              {status === 'idle' && 'Send Message'}
-              {status === 'sending' && 'Sending...'}
-              {status === 'sent' && 'Message sent ✓'}
+              {/* Shimmer sweep */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 translate-x-[-150%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-[600ms] ease-out group-hover:translate-x-[150%]"
+              />
+              <span className="relative">
+                {status === 'idle' && 'Send Message'}
+                {status === 'sending' && 'Sending...'}
+                {status === 'sent' && 'Message sent ✓'}
+                {status === 'error' && 'Something went wrong — email me instead'}
+              </span>
             </button>
           </form>
         </motion.div>
 
-        {/* Footer */}
+        {/* Footer — system readout */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -194,8 +211,11 @@ export default function ContactSection() {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="mt-20 pt-8 border-t border-slate-800/40"
         >
-          <p className="text-slate-700 text-sm font-mono">
-            © 2026 Kiran Shahi · Built with React + Three.js
+          <p className="text-slate-600 text-xs font-mono">
+            SYS.STATUS: ONLINE · LONG BEACH, CA · LAST DEPLOY 2026
+          </p>
+          <p className="text-slate-700 text-xs font-mono mt-1">
+            © 2026 KIRAN SHAHI · REACT 19 / THREE.JS / FRAMER MOTION
           </p>
         </motion.div>
       </div>

@@ -1,12 +1,35 @@
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+
+const NAV_LINKS = ['projects', 'about', 'journey', 'contact']
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
+  const [active, setActive] = useState(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Track which section is in view → drives the sliding underline
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id)
+        })
+      },
+      { rootMargin: '-40% 0px -55% 0px' }
+    )
+
+    NAV_LINKS.forEach((id) => {
+      const el = document.getElementById(id)
+      if (el) observer.observe(el)
+    })
+
+    return () => observer.disconnect()
   }, [])
 
   const scrollTo = (id) => {
@@ -22,42 +45,46 @@ export default function Nav() {
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <button
+        <motion.button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="text-xl font-bold tracking-widest text-[#00d4ff] hover:text-white transition-colors duration-200"
+          whileHover={{ scale: 1.05, textShadow: '0 0 14px rgba(34,211,238,0.8)' }}
+          className="text-xl font-bold tracking-widest text-[#22d3ee] hover:text-white transition-colors duration-200"
         >
           KS
-        </button>
+        </motion.button>
 
         <div className="flex items-center gap-8">
-          {['about', 'projects', 'contact'].map((id) => (
+          {NAV_LINKS.map((id) => (
             <button
               key={id}
               onClick={() => scrollTo(id)}
-              className="text-sm font-medium tracking-wider text-slate-400 hover:text-[#00d4ff] transition-colors duration-200 uppercase"
+              className={`relative text-sm font-medium tracking-wider transition-colors duration-200 uppercase ${
+                active === id ? 'text-[#22d3ee]' : 'text-slate-400 hover:text-[#22d3ee]'
+              }`}
             >
               {id}
+              {active === id && (
+                <motion.span
+                  layoutId="nav-underline"
+                  className="absolute -bottom-1 left-0 h-px w-full bg-[#22d3ee]"
+                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                />
+              )}
             </button>
           ))}
+
           {/* Place resume PDF at /public/resume.pdf */}
           <a
             href="/resume.pdf"
             download
-            style={{
-              border: '1px solid #22d3ee',
-              color: '#22d3ee',
-              background: 'transparent',
-              borderRadius: '9999px',
-              padding: '6px 16px',
-              fontSize: '13px',
-              fontWeight: 500,
-              textDecoration: 'none',
-              transition: 'background 0.2s, color 0.2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#22d3ee'; e.currentTarget.style.color = '#020817' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#22d3ee' }}
+            className="group relative overflow-hidden inline-block rounded-full border border-[#22d3ee] px-4 py-1.5 text-[13px] font-medium text-[#22d3ee] no-underline transition-colors duration-200 hover:bg-[#22d3ee] hover:text-[#020817]"
           >
-            Resume
+            {/* Shimmer sweep */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 translate-x-[-150%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-[600ms] ease-out group-hover:translate-x-[150%]"
+            />
+            <span className="relative">Resume</span>
           </a>
         </div>
       </div>

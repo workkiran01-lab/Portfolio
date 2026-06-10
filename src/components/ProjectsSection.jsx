@@ -1,29 +1,55 @@
 import { motion } from 'framer-motion'
 import { useRef } from 'react'
 
-const tags = ['React', 'Vite', 'Tailwind', 'Supabase', 'Groq API', 'Vercel']
+const f1Tags = ['React', 'Vite', 'Tailwind', 'Supabase', 'Groq API', 'Vercel']
 
 const VP = { once: true, amount: 0.2 }
 
 function Tag({ label }) {
   return (
-    <span className="px-2.5 py-1 text-xs font-mono font-medium rounded-md bg-[#00d4ff]/10 text-[#00d4ff] border border-[#00d4ff]/20">
+    <span className="px-2.5 py-1 text-xs font-mono font-medium rounded-md bg-[#22d3ee]/10 text-[#22d3ee] border border-[#22d3ee]/20">
       {label}
     </span>
   )
 }
 
 function ProjectCard({ title, description, tags: cardTags, liveUrl, githubUrl, status, delay = 0 }) {
+  const cardRef = useRef(null)
+
+  // Spotlight: track cursor position as CSS vars on the card
+  const handleMouseMove = (e) => {
+    const card = cardRef.current
+    if (!card) return
+    const rect = card.getBoundingClientRect()
+    card.style.setProperty('--mx', `${e.clientX - rect.left}px`)
+    card.style.setProperty('--my', `${e.clientY - rect.top}px`)
+  }
+
   return (
     <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={VP}
       transition={{ duration: 0.7, delay, ease: 'easeOut' }}
-      className="relative rounded-2xl border border-slate-800 bg-[#0a0f2e]/60 backdrop-blur-sm p-8 hover:border-[#00d4ff]/30 transition-all duration-300 group will-change-transform"
+      className="relative overflow-hidden rounded-2xl border border-slate-800 bg-[#0a0f2e]/60 backdrop-blur-sm p-8 hover:border-[#22d3ee]/30 transition-all duration-300 group will-change-transform"
     >
-      {/* Glow on hover */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(ellipse_at_top_left,rgba(0,212,255,0.04),transparent_60%)]" />
+      {/* Top accent line — draws outward on hover */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#22d3ee] to-transparent scale-x-0 origin-center group-hover:scale-x-100 transition-transform duration-500"
+      />
+
+      {/* Cursor spotlight */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background:
+            'radial-gradient(400px circle at var(--mx) var(--my), rgba(34,211,238,0.06), transparent 60%)',
+        }}
+      />
 
       <div className="relative">
         {status === 'live' && (
@@ -57,7 +83,7 @@ function ProjectCard({ title, description, tags: cardTags, liveUrl, githubUrl, s
                 href={liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm font-semibold text-[#00d4ff] hover:text-white transition-colors duration-200 flex items-center gap-1.5"
+                className="text-sm font-semibold text-[#22d3ee] hover:text-white transition-colors duration-200 flex items-center gap-1.5"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -101,8 +127,8 @@ export default function ProjectsSection() {
           transition={{ duration: 0.7, ease: 'easeOut' }}
           className="mb-16 will-change-transform"
         >
-          <p className="text-xs font-mono tracking-[0.25em] text-[#00d4ff] uppercase mb-3">
-            02. Projects
+          <p className="text-xs font-mono tracking-[0.25em] text-[#22d3ee] uppercase mb-3">
+            01. Projects
           </p>
           <h2 className="text-4xl sm:text-5xl font-black text-white">
             Things I've Built
@@ -113,16 +139,18 @@ export default function ProjectsSection() {
           <ProjectCard
             title="F1 Tax Helper"
             description="AI-powered US tax tool built specifically for F-1 international students. Includes an AI chat assistant (Alex), Form 8843 auto-generator, personalized tax questionnaire, and document checklist. Live and used by real students."
-            tags={tags}
-            liveUrl="https://f1-tax-helper.vercel.app"
+            tags={f1Tags}
+            liveUrl="https://f1taxhelper.com"
             githubUrl="https://github.com/workkiran01-lab/f1-tax-helper"
             status="live"
             delay={0.1}
           />
           <ProjectCard
-            title="Next Project"
-            description="Currently scoping a data tool for community organizations that can't afford enterprise software. Early research phase."
-            status="wip"
+            title="This Portfolio"
+            description="Designed and built from scratch — custom WebGL particle field that reacts to scroll, scroll-linked camera, and a hand-rolled design system. The site you're looking at is the case study."
+            tags={['React 19', 'Three.js', 'Framer Motion', 'Tailwind', 'Vite']}
+            githubUrl="https://github.com/workkiran01-lab/Portfolio"
+            status="live"
             delay={0.2}
           />
         </div>

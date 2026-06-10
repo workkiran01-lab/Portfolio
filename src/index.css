@@ -1,8 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --accent: #22d3ee;
+  --bg: #020817;
+  --surface: #0a0f2e;
+}
 
 * {
   box-sizing: border-box;
@@ -15,10 +21,31 @@ html {
 }
 
 body {
-  background: #020817;
+  background: var(--bg);
   color: #e2e8f0;
   font-family: 'Inter', system-ui, sans-serif;
   overflow-x: hidden;
+}
+
+/* Vignette — fixed, behind grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(2, 8, 23, 0.45) 100%);
+}
+
+/* Film grain — SVG fractal noise */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 #root {
@@ -27,7 +54,7 @@ body {
 }
 
 ::selection {
-  background: rgba(0, 212, 255, 0.3);
+  background: rgba(34, 211, 238, 0.3);
   color: #fff;
 }
 
@@ -35,9 +62,42 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #020817;
+  background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #00d4ff44;
+  background: #22d3ee44;
   border-radius: 3px;
+}
+
+/* Blinking terminal cursor (AboutSection) */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.terminal-cursor {
+  animation: cursor-blink 1s steps(2, start) infinite;
+}
+
+/* Timeline dot ripple */
+@keyframes dot-ripple {
+  0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.4); }
+  100% { box-shadow: 0 0 0 8px rgba(34, 211, 238, 0); }
+}
+.dot-ripple {
+  animation: dot-ripple 2.4s ease-out infinite;
+}
+
+/* Visible keyboard focus */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

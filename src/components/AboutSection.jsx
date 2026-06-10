@@ -1,11 +1,12 @@
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useInView } from 'framer-motion'
 
 const VP = { once: true, amount: 0.2 }
 
 const stats = [
-  { value: '3.57', label: 'GPA' },
-  { value: '1', label: 'Live Project' },
-  { value: '21', label: 'Age' },
+  { value: 3.57, decimals: 2, label: 'GPA' },
+  { value: 2, decimals: 0, label: 'Products Shipped' },
+  { value: 2024, decimals: 0, label: 'In the US Since', noComma: true },
 ]
 
 const skillGroups = [
@@ -23,6 +24,81 @@ const skillGroups = [
   },
 ]
 
+// Shared skill-tag style — single source of truth
+const TAG_STYLE = {
+  background: 'rgba(34,211,238,0.08)',
+  border: '1px solid rgba(34,211,238,0.2)',
+  color: 'var(--accent)',
+  borderRadius: '9999px',
+  padding: '4px 14px',
+  fontSize: '13px',
+  display: 'inline-block',
+}
+
+const easeOutExpo = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t))
+
+// Count-up via rAF + easeOutExpo over 1.4s. Jumps straight to the
+// final value when prefers-reduced-motion is set.
+function useCountUp(target, start, duration = 1400) {
+  const [value, setValue] = useState(0)
+
+  useEffect(() => {
+    if (!start) return
+
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      setValue(target)
+      return
+    }
+
+    let raf
+    const t0 = performance.now()
+
+    const tick = (now) => {
+      const p = Math.min((now - t0) / duration, 1)
+      setValue(target * easeOutExpo(p))
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [start, target, duration])
+
+  return value
+}
+
+function formatStat(value, decimals, noComma) {
+  const fixed = value.toFixed(decimals)
+  if (noComma) return fixed
+  const [int, frac] = fixed.split('.')
+  const grouped = Number(int).toLocaleString('en-US')
+  return frac ? `${grouped}.${frac}` : grouped
+}
+
+function StatCard({ value, decimals, label, noComma, delay }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, amount: 0.5 })
+  const current = useCountUp(value, inView)
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={VP}
+      transition={{ duration: 0.5, delay, ease: 'easeOut' }}
+      className="text-center p-5 rounded-2xl border border-slate-800 bg-[#0a0f2e]/50 hover:border-[#22d3ee]/40 transition-colors duration-300 will-change-transform"
+    >
+      <div className="text-3xl font-black text-[#22d3ee] mb-1">
+        {formatStat(current, decimals, noComma)}
+      </div>
+      <div className="text-xs text-slate-500 font-mono tracking-wider uppercase">{label}</div>
+    </motion.div>
+  )
+}
+
 export default function AboutSection() {
   return (
     <section id="about" className="relative py-32 px-6 border-t border-slate-800/60">
@@ -36,13 +112,13 @@ export default function AboutSection() {
           transition={{ duration: 0.7, ease: 'easeOut' }}
           className="mb-16 will-change-transform"
         >
-          <p className="text-xs font-mono tracking-[0.25em] text-[#00d4ff] uppercase mb-3">
-            01. About
+          <p className="text-xs font-mono tracking-[0.25em] text-[#22d3ee] uppercase mb-3">
+            02. About
           </p>
           <h2 className="text-4xl sm:text-5xl font-black text-white">
             From Kathmandu
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00d4ff] to-[#3b82f6]">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#22d3ee] to-[#3b82f6]">
               to California
             </span>
           </h2>
@@ -82,7 +158,13 @@ export default function AboutSection() {
               <p className="text-sm text-slate-500 mb-1 font-mono">Currently at</p>
               <p className="text-white font-semibold">Cypress College</p>
               <p className="text-slate-400 text-sm">Student Service Assistant · International Student Program</p>
-              <p className="text-[#00d4ff] text-sm mt-1">Transferring to a 4-year university →</p>
+              <p className="text-[#22d3ee] text-sm mt-1">
+                CSULB · Fall 2026 →{' '}
+                <span
+                  aria-hidden="true"
+                  className="terminal-cursor inline-block w-2 h-4 bg-[#22d3ee] align-middle"
+                />
+              </p>
             </div>
           </motion.div>
 
@@ -97,17 +179,7 @@ export default function AboutSection() {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 mb-8">
               {stats.map((s, i) => (
-                <motion.div
-                  key={s.label}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={VP}
-                  transition={{ duration: 0.5, delay: 0.25 + i * 0.1, ease: 'easeOut' }}
-                  className="text-center p-5 rounded-xl border border-slate-800 bg-[#0a0f2e]/50 will-change-transform"
-                >
-                  <div className="text-3xl font-black text-[#00d4ff] mb-1">{s.value}</div>
-                  <div className="text-xs text-slate-500 font-mono tracking-wider uppercase">{s.label}</div>
-                </motion.div>
+                <StatCard key={s.label} {...s} delay={0.25 + i * 0.1} />
               ))}
             </div>
 
@@ -126,19 +198,14 @@ export default function AboutSection() {
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {group.tags.map((tag) => (
-                      <span
+                      <motion.span
                         key={tag}
-                        style={{
-                          background: 'rgba(34,211,238,0.08)',
-                          border: '1px solid rgba(34,211,238,0.2)',
-                          color: '#22d3ee',
-                          borderRadius: '9999px',
-                          padding: '4px 14px',
-                          fontSize: '13px',
-                        }}
+                        style={TAG_STYLE}
+                        whileHover={{ y: -2, borderColor: 'rgba(34,211,238,0.55)' }}
+                        transition={{ duration: 0.2 }}
                       >
                         {tag}
-                      </span>
+                      </motion.span>
                     ))}
                   </div>
                 </div>
