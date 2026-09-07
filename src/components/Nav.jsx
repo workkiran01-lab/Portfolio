@@ -117,7 +117,7 @@ export default function Nav() {
             </span>
             <span>{enabled ? 'Motion on' : 'Motion off'}</span>
           </button>
-          <a className="nav-resume" href={profile.resume} download onClick={() => setOpen(false)}>
+          <a className="nav-resume" href={profile.resume} download="Kiran_Shahi_Resume.pdf" onClick={() => setOpen(false)}>
             Résumé <Icon name="download" size={16} />
           </a>
         </nav>

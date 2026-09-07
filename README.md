@@ -24,7 +24,7 @@ Deploy the generated `dist` directory with the existing hosting provider. The re
 - `src/components/ProjectsSection.jsx`: featured work and project descriptions.
 - `src/components/HeroOverlay.jsx`: introduction and internship availability.
 - `src/index.css`: design tokens, responsive styles, focus states, and reduced-motion overrides.
-- `public/resume.pdf`: the existing downloadable resume, preserved as provided. Review it separately for current education and availability before sending applications.
+- `public/resume.pdf`: the one-page software engineering internship resume, refreshed September 2026. Both download buttons use this file. Update it when education, project details, or availability change.
 
 The CSULB affiliation and ParkOS mention come from the supplied LinkedIn profile screenshot. F1 Tax Helper features were checked against its public source. ParkOS is intentionally described only as an in-development multi-tenant SaaS project until its repository, stack, and capabilities are available. No user counts or new performance claims are assumed.
 
