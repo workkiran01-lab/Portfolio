@@ -1,223 +1,106 @@
-import { motion } from 'framer-motion'
 import { useState } from 'react'
-
-const VP = { once: true, amount: 0.2 }
-
-const links = [
-  {
-    label: 'Email',
-    value: 'work.kiran01@gmail.com',
-    href: 'mailto:work.kiran01@gmail.com',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <rect width="20" height="16" x="2" y="4" rx="2" />
-        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-      </svg>
-    ),
-  },
-  {
-    label: 'LinkedIn',
-    value: 'linkedin.com/in/kiran-shahi',
-    href: 'https://linkedin.com/in/kiran-shahi',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-        <rect width="4" height="12" x="2" y="9" />
-        <circle cx="4" cy="4" r="2" />
-      </svg>
-    ),
-  },
-  {
-    label: 'GitHub',
-    value: 'github.com/workkiran01-lab',
-    href: 'https://github.com/workkiran01-lab',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-      </svg>
-    ),
-  },
-]
-
-const inputStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  color: 'white',
-  borderRadius: '8px',
-  padding: '10px 14px',
-  width: '100%',
-  outline: 'none',
-  fontSize: '14px',
-  transition: 'all 200ms',
-}
-
-const focusInput = (e) => {
-  e.currentTarget.style.borderColor = 'var(--accent)'
-  e.currentTarget.style.boxShadow = '0 0 0 2px rgba(34,211,238,0.25)'
-}
-
-const blurInput = (e) => {
-  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
-  e.currentTarget.style.boxShadow = 'none'
-}
+import Reveal from './Reveal'
+import Icon from './Icon'
+import { profile } from '../data/profile'
 
 export default function ContactSection() {
-  const [status, setStatus] = useState('idle')
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (status === 'sending' || status === 'sent') return
-    setStatus('sending')
-    try {
-      const formData = new FormData(e.target)
-      // TODO(kiran): create form at formspree.io and paste real ID
-      const res = await fetch('https://formspree.io/f/REPLACE_ME', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(formData)),
-      })
-      setStatus(res.ok ? 'sent' : 'error')
-    } catch {
-      setStatus('error')
+  const [status, setStatus] = useState('')
+  function handleSubmit(event) {
+    event.preventDefault()
+    const fields = new FormData(event.currentTarget)
+    const name = fields.get('name').trim()
+    const email = fields.get('email').trim()
+    const message = fields.get('message').trim()
+    if (!name || !email || !message) {
+      setStatus('Please fill in your name, email, and message.')
+      return
     }
+    const subject = encodeURIComponent(`Portfolio inquiry from ${name}`)
+    const body = encodeURIComponent(`${message}\n\nFrom: ${name}\nEmail: ${email}`)
+    window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`
+    setStatus(
+      'Continue in your email app to send your message. If it doesn’t open, use the email address on this page. Your message stays here.'
+    )
   }
-
   return (
-    <section id="contact" className="relative py-32 px-6 border-t border-slate-800/60">
-      <div className="max-w-3xl mx-auto text-center">
-
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VP}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
-          className="relative will-change-transform"
-        >
-          {/* Backlight glow behind the heading — purely decorative */}
-          <div
-            aria-hidden="true"
-            className="absolute left-1/2 top-0 -z-10 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/4 rounded-full bg-[#22d3ee] opacity-[0.07] blur-[120px]"
-          />
-          <p className="text-xs font-mono tracking-[0.25em] text-[#22d3ee] uppercase mb-3">
-            04. Contact
-          </p>
-          <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">
-            Let's Talk
+    <section id="contact" className="section contact-section" aria-labelledby="contact-title">
+      <div className="container contact-layout">
+        <Reveal className="contact-story">
+          <p className="eyebrow">04 / LET’S CONNECT</p>
+          <h2 id="contact-title">
+            Have something
+            <br />
+            <span>in mind?</span>
           </h2>
-          <p className="text-slate-400 text-lg mb-16 max-w-lg mx-auto leading-relaxed">
-            Whether it's collaboration, data science, or you're an international student
-            who needs help — reach out.
+          <p>
+            I’m looking for software engineering internships and opportunities to build with people
+            who care about their work. I’d love to hear from you.
           </p>
-        </motion.div>
-
-        {/* Contact cards — staggered */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          {links.map((link, i) => (
-            <motion.a
-              key={link.label}
-              href={link.href}
-              target={link.href.startsWith('mailto') ? undefined : '_blank'}
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={VP}
-              transition={{ duration: 0.5, delay: 0.1 + i * 0.12, ease: 'easeOut' }}
-              className="group flex flex-col items-center gap-3 px-8 py-6 rounded-2xl border border-slate-800 bg-[#0a0f2e]/40 hover:border-[#22d3ee]/40 hover:bg-[#22d3ee]/5 transition-all duration-300 will-change-transform"
-            >
-              <span className="text-slate-500 group-hover:text-[#22d3ee] transition-colors duration-200">
-                {link.icon}
-              </span>
-              <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">
-                {link.label}
-              </span>
-              <span className="text-sm text-slate-300 group-hover:text-white transition-colors duration-200">
-                {link.value}
-              </span>
-            </motion.a>
-          ))}
-        </div>
-
-        {/* Contact form */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VP}
-          transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-          className="mt-16 text-left will-change-transform"
-        >
-          <p className="text-xs text-slate-500 font-mono uppercase tracking-widest mb-6 text-center">
-            Or send a message
-          </p>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              required
-              style={inputStyle}
-              onFocus={focusInput}
-              onBlur={blurInput}
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              required
-              style={inputStyle}
-              onFocus={focusInput}
-              onBlur={blurInput}
-            />
-            <textarea
-              name="message"
-              placeholder="Message"
-              rows={4}
-              required
-              style={{ ...inputStyle, resize: 'vertical' }}
-              onFocus={focusInput}
-              onBlur={blurInput}
-            />
-            <button
-              type="submit"
-              disabled={status === 'sending' || status === 'sent'}
-              className={`group relative w-full overflow-hidden rounded-lg border-0 p-3 text-sm font-semibold text-[#020817] transition-colors duration-200 ${
-                status === 'sent'
-                  ? 'bg-[#22d3ee]/30 cursor-default'
-                  : status === 'sending'
-                    ? 'bg-[#22d3ee] cursor-default'
-                    : 'bg-[#22d3ee] cursor-pointer'
-              }`}
-            >
-              {/* Shimmer sweep */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 translate-x-[-150%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-[600ms] ease-out group-hover:translate-x-[150%]"
+          <a className="contact-email" href={`mailto:${profile.email}`}>
+            {profile.email}
+            <Icon />
+          </a>
+          <div className="contact-socials">
+            <a href={profile.linkedin} target="_blank" rel="noreferrer">
+              LinkedIn <Icon size={17} />
+            </a>
+            <a href={profile.github} target="_blank" rel="noreferrer">
+              GitHub <Icon size={17} />
+            </a>
+            <a href={profile.resume} download>
+              Résumé <Icon name="download" size={17} />
+            </a>
+          </div>
+          <p className="contact-location">Based in California · Open to a conversation</p>
+        </Reveal>
+        <Reveal delay={0.1} className="contact-form-panel">
+          <h3>Start a conversation</h3>
+          <p>Write a note, then send it from your email app.</p>
+          <form onSubmit={handleSubmit}>
+            <div className="form-row">
+              <div className="form-field">
+                <label htmlFor="contact-name">Your name</label>
+                <input
+                  id="contact-name"
+                  name="name"
+                  autoComplete="name"
+                  placeholder="Alex Morgan"
+                  maxLength={100}
+                  required
+                />
+              </div>
+              <div className="form-field">
+                <label htmlFor="contact-email">Your email</label>
+                <input
+                  id="contact-email"
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  placeholder="alex@company.com"
+                  maxLength={200}
+                  required
+                />
+              </div>
+            </div>
+            <div className="form-field">
+              <label htmlFor="contact-message">What’s on your mind?</label>
+              <textarea
+                id="contact-message"
+                name="message"
+                rows={5}
+                maxLength={1500}
+                placeholder="Tell me about the role, your team, or an idea…"
+                required
               />
-              <span className="relative">
-                {status === 'idle' && 'Send Message'}
-                {status === 'sending' && 'Sending...'}
-                {status === 'sent' && 'Message sent ✓'}
-                {status === 'error' && 'Something went wrong — email me instead'}
-              </span>
+            </div>
+            <button className="button button-primary" type="submit">
+              Open email draft <Icon name="mail" size={18} />
             </button>
+            <p className="form-status" role="status" aria-live="polite">
+              {status}
+            </p>
           </form>
-        </motion.div>
-
-        {/* Footer — system readout */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={VP}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-20 pt-8 border-t border-slate-800/40"
-        >
-          <p className="text-slate-600 text-xs font-mono">
-            SYS.STATUS: ONLINE · LONG BEACH, CA · LAST DEPLOY 2026
-          </p>
-          <p className="text-slate-700 text-xs font-mono mt-1">
-            © 2026 KIRAN SHAHI · REACT 19 / THREE.JS / FRAMER MOTION
-          </p>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   )
