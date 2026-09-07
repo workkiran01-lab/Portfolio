@@ -1,19 +1,18 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { profile } from '../data/profile'
+import Icon from './Icon'
 
-const NAV_LINKS = ['projects', 'about', 'journey', 'contact']
-
+const links = [
+  { id: 'projects', label: 'Work' },
+  { id: 'about', label: 'About' },
+  { id: 'journey', label: 'Experience' },
+  { id: 'contact', label: 'Contact' }
+]
 export default function Nav() {
-  const [scrolled, setScrolled] = useState(false)
-  const [active, setActive] = useState(null)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  // Track which section is in view → drives the sliding underline
+  const [open, setOpen] = useState(false)
+  const [active, setActive] = useState('home')
+  const toggle = useRef(null)
+  const header = useRef(null)
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -21,73 +20,78 @@ export default function Nav() {
           if (entry.isIntersecting) setActive(entry.target.id)
         })
       },
-      { rootMargin: '-40% 0px -55% 0px' }
+      { rootMargin: '-15% 0px -55% 0px' }
     )
-
-    NAV_LINKS.forEach((id) => {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
+    ;['home', ...links.map(({ id }) => id)].forEach((id) => {
+      const section = document.getElementById(id)
+      if (section) observer.observe(section)
     })
-
     return () => observer.disconnect()
   }, [])
-
-  const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-  }
-
+  useEffect(() => {
+    if (!open) return
+    const escape = (event) => {
+      if (event.key === 'Escape') {
+        setOpen(false)
+        toggle.current?.focus()
+      }
+    }
+    const outside = (event) => {
+      if (!header.current?.contains(event.target)) setOpen(false)
+    }
+    const wide = window.matchMedia('(min-width: 761px)')
+    const close = () => setOpen(false)
+    document.addEventListener('keydown', escape)
+    document.addEventListener('pointerdown', outside)
+    wide.addEventListener('change', close)
+    return () => {
+      document.removeEventListener('keydown', escape)
+      document.removeEventListener('pointerdown', outside)
+      wide.removeEventListener('change', close)
+    }
+  }, [open])
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? 'bg-[#020817]/80 backdrop-blur-md border-b border-cyan-500/10'
-          : 'bg-transparent'
-      }`}
-    >
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <motion.button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          whileHover={{ scale: 1.05, textShadow: '0 0 14px rgba(34,211,238,0.8)' }}
-          className="text-xl font-bold tracking-widest text-[#22d3ee] hover:text-white transition-colors duration-200"
+    <header className="site-header" ref={header}>
+      <div className="nav-inner container">
+        <a
+          className="wordmark"
+          href="#home"
+          aria-label="Kiran Shahi, home"
+          onClick={() => setOpen(false)}
         >
-          KS
-        </motion.button>
-
-        <div className="flex items-center gap-8">
-          {NAV_LINKS.map((id) => (
-            <button
+          kiran<span>.</span>
+        </a>
+        <button
+          ref={toggle}
+          className="menu-toggle"
+          aria-expanded={open}
+          aria-controls="primary-navigation"
+          aria-label={open ? 'Close navigation' : 'Open navigation'}
+          onClick={() => setOpen(!open)}
+        >
+          <Icon name={open ? 'close' : 'menu'} />
+        </button>
+        <nav
+          id="primary-navigation"
+          aria-label="Main navigation"
+          className={`nav-links ${open ? 'is-open' : ''}`}
+        >
+          {links.map(({ id, label }) => (
+            <a
               key={id}
-              onClick={() => scrollTo(id)}
-              className={`relative text-sm font-medium tracking-wider transition-colors duration-200 uppercase ${
-                active === id ? 'text-[#22d3ee]' : 'text-slate-400 hover:text-[#22d3ee]'
-              }`}
+              className={active === id ? 'active' : ''}
+              aria-current={active === id ? 'location' : undefined}
+              href={`#${id}`}
+              onClick={() => setOpen(false)}
             >
-              {id}
-              {active === id && (
-                <motion.span
-                  layoutId="nav-underline"
-                  className="absolute -bottom-1 left-0 h-px w-full bg-[#22d3ee]"
-                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                />
-              )}
-            </button>
+              {label}
+            </a>
           ))}
-
-          {/* Place resume PDF at /public/resume.pdf */}
-          <a
-            href="/resume.pdf"
-            download
-            className="group relative overflow-hidden inline-block rounded-full border border-[#22d3ee] px-4 py-1.5 text-[13px] font-medium text-[#22d3ee] no-underline transition-colors duration-200 hover:bg-[#22d3ee] hover:text-[#020817]"
-          >
-            {/* Shimmer sweep */}
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 translate-x-[-150%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-[600ms] ease-out group-hover:translate-x-[150%]"
-            />
-            <span className="relative">Resume</span>
+          <a className="nav-resume" href={profile.resume} download onClick={() => setOpen(false)}>
+            Résumé <Icon name="download" size={16} />
           </a>
-        </div>
+        </nav>
       </div>
-    </nav>
+    </header>
   )
 }

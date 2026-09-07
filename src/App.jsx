@@ -1,47 +1,40 @@
-import { useMemo, useState } from 'react'
-import HeroScene from './components/HeroScene'
-import MobileFallback from './components/MobileFallback'
+import { MotionConfig, motion, useReducedMotion, useScroll, useSpring } from 'framer-motion'
 import Nav from './components/Nav'
 import HeroOverlay from './components/HeroOverlay'
 import ProjectsSection from './components/ProjectsSection'
 import AboutSection from './components/AboutSection'
-import ContactSection from './components/ContactSection'
 import TimelineSection from './components/TimelineSection'
-import Loader from './components/Loader'
-import CursorGlow from './components/CursorGlow'
+import ContactSection from './components/ContactSection'
 
 export default function App() {
-  const [loading, setLoading] = useState(true)
-
-  const isMobile = useMemo(
-    () =>
-      typeof window !== 'undefined' &&
-      (window.innerWidth < 768 || navigator.hardwareConcurrency <= 2),
-    []
-  )
-
+  const { scrollYProgress } = useScroll()
+  const progress = useSpring(scrollYProgress, { stiffness: 180, damping: 35 })
+  const reducedMotion = useReducedMotion()
   return (
-    <div className="bg-[#020817] min-h-screen">
-      {loading && <Loader onDone={() => setLoading(false)} />}
-      <CursorGlow isMobile={isMobile} />
-      {/* 3D starfield — swapped for CSS fallback on mobile / low-end */}
-      {isMobile ? <MobileFallback /> : <HeroScene />}
-
-      {/* Fixed nav over the canvas */}
+    <MotionConfig reducedMotion="user">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
+      {!reducedMotion && (
+        <motion.div className="reading-progress" style={{ scaleX: progress }} aria-hidden="true" />
+      )}
       <Nav />
-
-      {/* Hero section — full viewport height, content sits above canvas */}
-      <div className="relative z-10 min-h-screen">
+      <main id="main" tabIndex={-1}>
         <HeroOverlay />
-      </div>
-
-      {/* Scroll content — solid background so it covers the fixed canvas */}
-      <div className="relative z-10 bg-[#020817]">
         <ProjectsSection />
         <AboutSection />
         <TimelineSection />
         <ContactSection />
-      </div>
-    </div>
+      </main>
+      <footer className="site-footer container">
+        <a href="#home" className="wordmark" aria-label="Kiran Shahi, back to top">
+          kiran<span>.</span>
+        </a>
+        <p>© {new Date().getFullYear()} Kiran Shahi</p>
+        <a href="https://github.com/workkiran01-lab/Portfolio" target="_blank" rel="noreferrer">
+          Built with React. Made with care.
+        </a>
+      </footer>
+    </MotionConfig>
   )
 }
