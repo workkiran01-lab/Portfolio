@@ -26,11 +26,11 @@ export default function ContactSection() {
     <section id="contact" className="section contact-section" aria-labelledby="contact-title">
       <div className="container contact-layout">
         <Reveal className="contact-story">
-          <p className="eyebrow">04 / LET’S CONNECT</p>
+          <p className="eyebrow">04 / THE NEXT CHAPTER</p>
           <h2 id="contact-title">
-            Have something
+            Let’s build
             <br />
-            <span>in mind?</span>
+            <span>what’s next.</span>
           </h2>
           <p>
             I’m looking for software engineering internships and opportunities to build with people

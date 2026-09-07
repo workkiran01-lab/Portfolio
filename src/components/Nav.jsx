@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { profile } from '../data/profile'
 import Icon from './Icon'
+import { useMotionSettings } from './MotionSettings'
 
 const links = [
+  { id: 'journey', label: 'Journey' },
   { id: 'projects', label: 'Work' },
   { id: 'about', label: 'About' },
-  { id: 'journey', label: 'Experience' },
   { id: 'contact', label: 'Contact' }
 ]
 export default function Nav() {
+  const { enabled, paused, setPaused, reducedMotion } = useMotionSettings()
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState('home')
   const toggle = useRef(null)
@@ -59,7 +61,7 @@ export default function Nav() {
           aria-label="Kiran Shahi, home"
           onClick={() => setOpen(false)}
         >
-          kiran<span>.</span>
+          KS<span>.</span>
         </a>
         <button
           ref={toggle}
@@ -87,6 +89,34 @@ export default function Nav() {
               {label}
             </a>
           ))}
+          <button
+            className="motion-toggle"
+            onClick={() => setPaused(!paused)}
+            aria-pressed={!enabled}
+            disabled={reducedMotion}
+            aria-label={
+              reducedMotion
+                ? 'Reduced motion enabled by your system'
+                : enabled
+                  ? 'Pause animations'
+                  : 'Resume animations'
+            }
+            title={
+              reducedMotion
+                ? 'Following your reduced-motion preference'
+                : enabled
+                  ? 'Pause animations'
+                  : 'Resume animations'
+            }
+          >
+            <span className="motion-bars" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+            <span>{enabled ? 'Motion on' : 'Motion off'}</span>
+          </button>
           <a className="nav-resume" href={profile.resume} download onClick={() => setOpen(false)}>
             Résumé <Icon name="download" size={16} />
           </a>

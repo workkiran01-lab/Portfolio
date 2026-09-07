@@ -1,4 +1,5 @@
 import Reveal from './Reveal'
+import ProjectTilt from './ProjectTilt'
 import Icon from './Icon'
 import { profile } from '../data/profile'
 
@@ -24,15 +25,16 @@ export default function ProjectsSection() {
     <section id="projects" className="section container" aria-labelledby="work-title">
       <Reveal className="section-heading">
         <div>
-          <p className="eyebrow">01 / SELECTED WORK</p>
+          <p className="eyebrow">02 / SELECTED WORK</p>
           <h2 id="work-title">
-            Ideas, put into practice<span>.</span>
+            Built from a<br />
+            <span>real question.</span>
           </h2>
         </div>
         <p>Personal projects built around practical problems and hands-on learning.</p>
       </Reveal>
       <Reveal>
-        <article id="f1-tax-helper" className="featured-project">
+        <ProjectTilt id="f1-tax-helper" className="featured-project">
           <div className="project-story">
             <div className="project-meta">
               <span>FEATURED PROJECT</span>
@@ -69,6 +71,7 @@ export default function ProjectsSection() {
             </div>
           </div>
           <div className="project-detail">
+            <div className="project-orbit" aria-hidden="true" />
             <div className="detail-top">
               <span className="detail-wordmark">
                 F1<span> / </span>Tax Helper
@@ -91,11 +94,11 @@ export default function ProjectsSection() {
               <span>Questionnaire · AI chat · PDF tools</span>
             </div>
           </div>
-        </article>
+        </ProjectTilt>
       </Reveal>
       <div className="project-grid">
         <Reveal delay={0.05}>
-          <article id="parkos" className="project-card">
+          <ProjectTilt id="parkos" className="project-card parkos-card">
             <div className="project-meta">
               <span>02 / PARKOS</span>
               <span className="in-progress">IN DEVELOPMENT</span>
@@ -108,10 +111,10 @@ export default function ProjectsSection() {
               <li>Multi-tenancy</li>
             </ul>
             <p className="project-note">Work in progress</p>
-          </article>
+          </ProjectTilt>
         </Reveal>
         <Reveal delay={0.12}>
-          <article className="project-card">
+          <ProjectTilt className="project-card portfolio-card">
             <div className="project-meta">
               <span>03 / PERSONAL PORTFOLIO</span>
               <Icon name="code" />
@@ -119,11 +122,12 @@ export default function ProjectsSection() {
             <h3>A home for my work</h3>
             <p className="card-subtitle">The site you’re exploring.</p>
             <p>
-              A responsive React portfolio with scroll-triggered motion, keyboard-friendly
-              navigation, and support for reduced-motion preferences.
+              A scroll-driven portfolio with a morphing 3D particle sculpture, an animated personal
+              journey, interactive project cards, and reduced-motion support.
             </p>
             <ul className="tags" aria-label="Portfolio technologies">
               <li>React</li>
+              <li>Three.js</li>
               <li>Framer Motion</li>
               <li>Vite</li>
             </ul>
@@ -135,7 +139,7 @@ export default function ProjectsSection() {
             >
               Explore the code <Icon />
             </a>
-          </article>
+          </ProjectTilt>
         </Reveal>
       </div>
       <Reveal className="work-footer">
