@@ -1,73 +1,87 @@
-import Reveal from './Reveal'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import { useMotionSettings } from './MotionSettings'
 import Icon from './Icon'
-export default function HeroOverlay() {
+
+const ease = [0.22, 1, 0.36, 1]
+function NameLine({ text, offset = 0, outline = false }) {
+  const { enabled } = useMotionSettings()
   return (
-    <section id="home" className="hero container" aria-labelledby="hero-title">
-      <div className="hero-grid" aria-hidden="true" />
-      <Reveal className="hero-topline">
-        <p className="eyebrow">COMPUTER SCIENCE @ CSULB</p>
-        <a className="availability" href="#contact">
-          <span /> Seeking internships
-        </a>
-      </Reveal>
-      <Reveal delay={0.08}>
-        <h1 id="hero-title" className="hero-name">
-          Kiran <span>Shahi.</span>
+    <span className={`name-line ${outline ? 'name-outline' : ''}`} aria-hidden="true">
+      {[...text].map((letter, i) => (
+        <motion.span
+          key={i}
+          initial={enabled ? { y: '110%', rotate: 7, opacity: 0 } : false}
+          animate={{ y: '0%', rotate: 0, opacity: 1 }}
+          transition={{
+            duration: enabled ? 1.1 : 0,
+            delay: enabled ? 0.15 + offset + i * 0.065 : 0,
+            ease
+          }}
+        >
+          {letter}
+        </motion.span>
+      ))}
+    </span>
+  )
+}
+export default function HeroOverlay() {
+  const ref = useRef(null)
+  const { enabled } = useMotionSettings()
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const y = useTransform(scrollYProgress, [0, 1], [0, 170])
+  const opacity = useTransform(scrollYProgress, [0, 0.85], [1, 0])
+  const intro = {
+    initial: enabled ? { opacity: 0, y: 20 } : false,
+    animate: { opacity: 1, y: 0 },
+    transition: { delay: enabled ? 0.9 : 0, duration: enabled ? 0.8 : 0 }
+  }
+  return (
+    <section id="home" ref={ref} className="hero" aria-labelledby="hero-title">
+      <div className="hero-orbit-label" aria-hidden="true">
+        <span className="orbit-cross">+</span> IDEAS IN MOTION{' '}
+        <span className="orbit-cross">+</span>
+      </div>
+      <motion.div className="hero-inner container" style={enabled ? { y, opacity } : undefined}>
+        <motion.div className="hero-topline" {...intro}>
+          <p className="eyebrow">KATHMANDU → CALIFORNIA</p>
+          <a className="availability" href="#contact">
+            <span /> OPEN TO INTERNSHIPS
+          </a>
+        </motion.div>
+        <h1 id="hero-title" className="hero-name" aria-label="Kiran Shahi">
+          <NameLine text="KIRAN" />
+          <NameLine text="SHAHI" offset={0.18} outline />
+          <span className="hero-name-dot" aria-hidden="true">
+            .
+          </span>
         </h1>
-      </Reveal>
-      <div className="hero-content">
-        <Reveal delay={0.16} className="hero-intro">
-          <h2>
-            Building software.
-            <br />
-            <span>Keeping people in mind.</span>
-          </h2>
+        <motion.div className="hero-intro" {...intro}>
+          <p className="hero-role">
+            Developer. Student. <span>Always building.</span>
+          </p>
           <p>
-            I’m a full-stack developer and CS student in California. I turn problems I’ve
-            experienced into practical web applications, with a growing interest in AI and data
-            science.
+            I turn unfamiliar problems into useful software.
+            <br className="desktop-break" /> Computer Science at CSULB. A growing curiosity for AI.
           </p>
           <div className="button-row">
             <a className="button button-primary" href="#projects">
-              Explore my work <Icon name="down" size={18} />
+              Explore my work <Icon />
             </a>
-            <a className="button button-text" href="#contact">
-              Let’s connect <Icon size={18} />
+            <a className="button button-outline" href="#journey">
+              Follow the journey <Icon name="down" size={17} />
             </a>
           </div>
-        </Reveal>
-        <Reveal delay={0.24} className="hero-aside">
-          <div className="aside-heading">
-            <span className="eyebrow">CURRENTLY BUILDING</span>
-            <Icon name="code" />
-          </div>
-          <a href="#f1-tax-helper" className="now-project">
-            <span>
-              <strong>F1 Tax Helper</strong>
-              <small>Making student tax preparation clearer.</small>
-            </span>
-            <Icon />
-          </a>
-          <a href="#parkos" className="now-project">
-            <span>
-              <strong>ParkOS</strong>
-              <small>A multi-tenant SaaS project in progress.</small>
-            </span>
-            <Icon />
-          </a>
-          <p className="aside-note">
-            From Kathmandu to California.
-            <br />
-            Curiosity has been the constant.
-          </p>
-        </Reveal>
-      </div>
-      <Reveal delay={0.3} className="hero-bottom">
-        <span>REACT / JAVASCRIPT / PYTHON / SQL</span>
-        <a href="#projects">
-          Selected work <Icon name="down" size={16} />
+        </motion.div>
+      </motion.div>
+      <motion.div className="hero-bottom container" {...intro}>
+        <a className="scroll-cue" href="#journey">
+          <span className="scroll-line" aria-hidden="true" />
+          <span>SCROLL TO DISCOVER</span>
         </a>
-      </Reveal>
+        <p>REACT / PYTHON / REAL-WORLD PROBLEMS</p>
+        <span className="hero-index">01 — 05</span>
+      </motion.div>
     </section>
   )
 }
