@@ -47,7 +47,7 @@ export default function ContactSection() {
             <a href={profile.github} target="_blank" rel="noreferrer">
               GitHub <Icon size={17} />
             </a>
-            <a href={profile.resume} download>
+            <a href={profile.resume} download="Kiran_Shahi_Resume.pdf">
               Résumé <Icon name="download" size={17} />
             </a>
           </div>
